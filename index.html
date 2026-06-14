@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#c9a84c">
+  <meta name="description" content="Score Cekih - Premium Card Game Score Tracker by Sadewa Corp">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Score Cekih">
+  <title>Score Cekih — Sadewa Corp</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/x-icon" href="images/joker.ico">
+  <link rel="apple-touch-icon" href="images/joker.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============================================================
+     LOADING SCREEN
+     ============================================================ -->
+<div id="loading-screen">
+  <img src="images/joker.png" alt="Score Cekih Logo" class="loading-logo" onerror="this.style.display='none'">
+  <div class="loading-title">Score Cekih</div>
+  <div class="loading-sub">by Sadewa Corp</div>
+  <div class="loading-bar-wrap">
+    <div class="loading-bar"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     GOLD FLASH OVERLAY
+     ============================================================ -->
+<div id="gold-flash"></div>
+
+<!-- ============================================================
+     REWARD VIDEO OVERLAY (TRUE FULLSCREEN)
+     ============================================================ -->
+<div id="reward-overlay" style="display:none;">
+  <video id="reward-video" playsinline></video>
+  <button class="reward-skip-btn" id="reward-skip-btn">⏩ Skip</button>
+</div>
+
+<!-- ============================================================
+     MAIN APP
+     ============================================================ -->
+<div id="app">
+
+  <!-- ==========================================================
+       SETUP PAGE
+       ========================================================== -->
+  <div id="setup-page" style="display:none;">
+    <div style="padding-bottom:30px; overflow-y:auto; min-height:100vh;">
+      <br>
+      <img src="images/joker.png" alt="Score Cekih" class="setup-logo" onerror="this.style.display='none'">
+      <div class="setup-title">SCORE CEKIH</div>
+      <div class="setup-sub">by Sadewa Corp &bull; Premium Card Scorer</div>
+
+      <div style="padding:0 16px; max-width:480px; margin:0 auto;">
+        <div class="setup-card">
+          <h3>&#9827; Player Setup</h3>
+          <div class="player-inputs">
+            <div class="input-group">
+              <label>&#128009; Player 1 (Dragon &bull; &#9824;)</label>
+              <input type="text" id="setup-player-1" placeholder="Player 1 name" maxlength="20">
+            </div>
+            <div class="input-group">
+              <label>&#128047; Player 2 (Tiger &bull; &#9825;)</label>
+              <input type="text" id="setup-player-2" placeholder="Player 2 name" maxlength="20">
+            </div>
+            <div class="input-group">
+              <label>&#129413; Player 3 (Eagle &bull; &#9826;)</label>
+              <input type="text" id="setup-player-3" placeholder="Player 3 name" maxlength="20">
+            </div>
+            <div class="input-group">
+              <label>&#129412; Player 4 (Qilin &bull; &#9827;)</label>
+              <input type="text" id="setup-player-4" placeholder="Player 4 name" maxlength="20">
+            </div>
+          </div>
+        </div>
+
+        <div class="setup-card">
+          <h3>&#127919; Victory Target</h3>
+          <div class="input-group">
+            <select id="setup-victory-target">
+              <option value="500">500 points</option>
+              <option value="750">750 points</option>
+              <option value="1000" selected>1000 points (Default)</option>
+              <option value="1500">1500 points</option>
+              <option value="custom">Custom...</option>
+            </select>
+          </div>
+          <div id="setup-custom-wrap" class="input-group" style="display:none;">
+            <input type="number" id="setup-custom-target" placeholder="Enter custom target" min="100" max="99999">
+          </div>
+        </div>
+
+        <button class="btn btn-gold btn-full" id="start-game-btn" style="font-size:1rem;padding:14px;margin-bottom:8px;">
+          &#127918; START GAME
+        </button>
+
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-silver btn-sm" id="setup-light-btn" style="flex:1;">&#127769; Theme</button>
+          <button class="btn btn-silver btn-sm" id="setup-music-btn" style="flex:1;">&#127925; Music</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================
+       GAME PAGE
+       ========================================================== -->
+  <div id="game-page" style="display:none; flex-direction:column; height:100vh; overflow:hidden;">
+
+    <!-- Header -->
+    <header id="game-header">
+      <div class="header-inner">
+        <img src="images/joker.png" alt="Logo" class="header-logo" onerror="this.style.display='none'">
+        <div style="flex:1;">
+          <div class="header-title">Score Cekih</div>
+          <div id="header-round-info" class="header-round-turn">Round 1 &bull; Turn 0</div>
+        </div>
+        <div id="header-target" class="header-info" style="margin-right:4px;">Target: 1000</div>
+        <div class="header-btns">
+          <button class="music-btn" id="game-music-btn" title="Toggle Music">&#127925;</button>
+          <button class="btn btn-sm btn-silver" id="game-light-btn" title="Toggle Theme" style="padding:4px 7px;">&#127769;</button>
+          <button class="btn btn-sm btn-silver" id="fullscreen-btn" title="Fullscreen" style="padding:4px 7px;">&#9974;</button>
+          <button class="btn btn-sm btn-silver" id="screenshot-btn" title="Screenshot" style="padding:4px 7px;">&#128247;</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Game Content (scrollable) -->
+    <div id="game-scroll" style="flex:1; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch;">
+
+      <!-- Player Cards Grid — 4 cards always visible, no scroll needed -->
+      <div id="cards-grid" class="cards-grid" style="padding:6px;"></div>
+
+      <!-- AI Commentator -->
+      <div id="ai-comment-box" style="margin:0 6px 4px;">
+        <div class="ai-label">&#129302; AI Commentator</div>
+        <div id="ai-comment-text">Siap bermain!</div>
+      </div>
+
+      <!-- Burn Panel -->
+      <div id="burn-panel" style="display:none; margin:0 6px 4px;">
+        <div class="burn-title">&#128293; BURN CANDIDATES</div>
+        <div id="burn-candidate-list"></div>
+        <div class="burn-panel-btns">
+          <button class="btn btn-fire btn-sm" id="confirm-burn-btn" style="flex:2;">&#9989; CONFIRM BURN</button>
+          <button class="btn btn-silver btn-sm" id="cancel-burn-btn" style="flex:1;">&#10060; Cancel</button>
+        </div>
+      </div>
+
+      <!-- Tab Bar -->
+      <div class="tab-bar" role="tablist" style="margin-top:4px;">
+        <button class="tab-btn active" data-tab="ranking"       role="tab">&#127942; Rank</button>
+        <button class="tab-btn"        data-tab="history"       role="tab">&#128220; History</button>
+        <button class="tab-btn"        data-tab="achievements"  role="tab">&#127885; Achiev</button>
+        <button class="tab-btn"        data-tab="statistics"    role="tab">&#128202; Stats</button>
+        <button class="tab-btn"        data-tab="archive"       role="tab">&#128193; Archive</button>
+        <button class="tab-btn"        data-tab="chart"         role="tab">&#128200; Chart</button>
+      </div>
+
+      <!-- Tab Content Areas -->
+      <div id="tab-content-ranking"      class="tab-content-area active"></div>
+      <div id="tab-content-history"      class="tab-content-area"></div>
+      <div id="tab-content-achievements" class="tab-content-area"></div>
+      <div id="tab-content-statistics"   class="tab-content-area"></div>
+      <div id="tab-content-archive"      class="tab-content-area"></div>
+      <div id="tab-content-chart"        class="tab-content-area">
+        <canvas id="score-chart" style="width:100%;max-height:200px;"></canvas>
+      </div>
+
+      <!-- Reset -->
+      <div id="reset-btn-wrap" style="padding:10px; text-align:center;">
+        <button class="btn btn-red btn-sm" id="reset-btn">&#128465; RESET GAME</button>
+      </div>
+
+    </div><!-- end game-scroll -->
+
+    <!-- Sticky Action Bar -->
+    <div class="action-bar" style="flex-shrink:0;">
+      <button class="btn btn-gold" id="save-turn-btn" style="grid-column:1/-1;font-size:0.85rem;padding:10px;">
+        &#128190; SAVE TURN
+      </button>
+      <button class="btn btn-silver btn-sm" id="undo-btn">&#8617; UNDO</button>
+      <button class="btn btn-silver btn-sm" id="game-music-bottom-btn">&#127925; Music</button>
+      <button class="btn btn-silver btn-sm" id="game-edit-btn">&#9999; Names</button>
+    </div>
+
+  </div>
+
+  <!-- ==========================================================
+       NEW ROUND PAGE
+       ========================================================== -->
+  <div id="new-round-page" style="display:none; overflow-y:auto; min-height:100vh; padding-bottom:30px;">
+    <!-- Rendered dynamically by JS -->
+  </div>
+
+</div><!-- end app -->
+
+<!-- Edit Name Modal -->
+<div id="edit-name-modal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title">&#9999; Edit Player Names</div>
+    <div id="edit-name-fields"></div>
+    <div style="display:flex;gap:8px;margin-top:12px;">
+      <button class="btn btn-gold" id="edit-name-save-btn" style="flex:1;">&#10003; Save</button>
+      <button class="btn btn-silver" id="edit-name-cancel-btn" style="flex:1;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
